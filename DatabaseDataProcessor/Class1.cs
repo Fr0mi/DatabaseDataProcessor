@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,16 +14,16 @@ namespace DatabaseDataProcessor
         private const string DatabaseName = "test";
         private const string MyUsername = "test";
         private const string MyPassword = "test";
+        private readonly string _connectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
 
-        public bool EstablishConnection()
+        public void EstablishConnection(string connectionString)
         {
-            using (var conn = new SqlConnection())
-            {
-                
-                conn.ConnectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
-            }
+            var conn = new SqlConnection {ConnectionString = connectionString};
+        }
 
-            return false;
+        public void EstablishConnection()
+        {
+            EstablishConnection(_connectionString);
         }
     }   
 
