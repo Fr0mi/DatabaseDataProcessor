@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 
 namespace DatabaseDataProcessor
 {
@@ -6,11 +7,15 @@ namespace DatabaseDataProcessor
     {
         private const string ServerName = "test";
         private const string DatabaseName = "test";
+        private const string Port = "test";
         private const string MyUsername = "test";
         private const string MyPassword = "test";
-        private static readonly string ConnectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
-        private static SqlConnection _conn;
-        private bool _isConnectionOpen = false;
+        private static readonly string ConnectionString = $"Server={ServerName}; Port={Port};" +
+                                                          $" Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
+
+        public static SqlConnection Conn { get; private set; }
+
+        public bool IsConnectionOpen { get; private set; } = false;
 
         public DbConnector(string connectionString)
         {
@@ -21,24 +26,49 @@ namespace DatabaseDataProcessor
 //                conn.Open();
 //
 //            }
+            
+            Conn = new SqlConnection(connectionString);
+            Conn.Open();
 
-            _conn.ConnectionString = connectionString;
-            _conn.Open();
-
-            _isConnectionOpen = true;
+            IsConnectionOpen = true;
         }
 
         public DbConnector() : this(ConnectionString) { }
 
         public void CloseConnection()
         {
-            if (_isConnectionOpen)
+            if (IsConnectionOpen)
             {
-                _conn.Close();
-                _conn.Dispose();
+                Conn.Close();
+                Conn.Dispose();
 
-                _isConnectionOpen = false;
+                IsConnectionOpen = false;
             }
+        }
+
+        /// <summary>
+        /// Reads from the Database with a select command
+        /// </summary>
+        /// <param name="command">Needs to be a select command</param>
+        public void SelectSqlExecution(SqlCommand command)
+        {
+
+            try
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        // Do something..
+                    }
+                }
+            }
+            catch (SqlException er)
+            {
+                Console.WriteLine(er);
+                throw;
+            }
+            
         }
     }
 }
