@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.SqlClient;
 
 namespace DatabaseDataProcessor
 {
@@ -15,16 +9,40 @@ namespace DatabaseDataProcessor
         private const string MyUsername = "test";
         private const string MyPassword = "test";
         private readonly string _connectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
+        private SqlConnection _conn;
+        private bool _isConnectionOpen = false;
 
         public void EstablishConnection(string connectionString)
         {
-            var conn = new SqlConnection {ConnectionString = connectionString};
+
+//            // Closes and Disposes at the end of the using statement
+//            using (var conn = new SqlConnection())
+//            {
+//                conn.ConnectionString = connectionString;
+//                conn.Open();
+//
+//            }
+
+            _conn.ConnectionString = connectionString;
+            _conn.Open();
+
+            _isConnectionOpen = true;
         }
 
         public void EstablishConnection()
         {
             EstablishConnection(_connectionString);
         }
-    }   
 
+        public void CloseConnection()
+        {
+            if (_isConnectionOpen)
+            {
+                _conn.Close();
+                _conn.Dispose();
+
+                _isConnectionOpen = false;
+            }
+        }
+    }
 }
