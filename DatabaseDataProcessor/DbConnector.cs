@@ -8,13 +8,12 @@ namespace DatabaseDataProcessor
         private const string DatabaseName = "test";
         private const string MyUsername = "test";
         private const string MyPassword = "test";
-        private readonly string _connectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
-        private SqlConnection _conn;
+        private static readonly string ConnectionString = $"Server={ServerName}; Database={DatabaseName}; Uid={MyUsername}; Pwd={MyPassword}";
+        private static SqlConnection _conn;
         private bool _isConnectionOpen = false;
 
-        public void EstablishConnection(string connectionString)
+        public DbConnector(string connectionString)
         {
-
 //            // Closes and Disposes at the end of the using statement
 //            using (var conn = new SqlConnection())
 //            {
@@ -29,10 +28,7 @@ namespace DatabaseDataProcessor
             _isConnectionOpen = true;
         }
 
-        public void EstablishConnection()
-        {
-            EstablishConnection(_connectionString);
-        }
+        public DbConnector() : this(ConnectionString) { }
 
         public void CloseConnection()
         {
